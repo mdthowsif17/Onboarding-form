@@ -314,26 +314,38 @@
   .options-grid {
     display: flex; flex-wrap: wrap; gap: 0.6rem;
   }
-  .option-chip input { display: none; }
-  .option-chip label {
-    display: inline-block;
+  .option-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     padding: 0.45rem 1rem;
     border: 1.5px solid #e8d5da;
     border-radius: 2px;
     font-size: 0.72rem;
     cursor: pointer;
     transition: all 0.2s;
-    text-transform: none;
-    letter-spacing: 0.03em;
     color: var(--muted);
     background: #fdfafa;
     font-weight: 500;
+    user-select: none;
+    text-transform: none;
+    letter-spacing: 0.03em;
   }
-  .option-chip input:checked + label {
-    border-color: var(--rose);
-    background: var(--blush);
-    color: var(--deep);
-    font-weight: 600;
+  .option-chip input[type="radio"],
+  .option-chip input[type="checkbox"] {
+    display: none;
+  }
+  .option-chip.selected {
+    border-color: var(--rose) !important;
+    background: var(--blush) !important;
+    color: var(--deep) !important;
+    font-weight: 600 !important;
+  }
+  .option-chip:not(.selected) {
+    border-color: #e8d5da !important;
+    background: #fdfafa !important;
+    color: var(--muted) !important;
+    font-weight: 500 !important;
   }
 
   /* Agreement section */
@@ -551,20 +563,20 @@
       <div class="field">
         <label>Do you accept the position of <em>Better Half</em>? <span class="req">*</span></label>
         <div class="options-grid">
-          <label class="option-chip"><input type="radio" name="accept" value="yes"><label>Yes, absolutely 💖</label></label>
-          <label class="option-chip"><input type="radio" name="accept" value="obviously"><label>Obviously yes 😌</label></label>
-          <label class="option-chip"><input type="radio" name="accept" value="always"><label>Always &amp; forever ✨</label></label>
+          <div class="option-chip" id="chip_yes" onclick="selectRadio('accept','yes')"><input type="radio" name="accept" value="yes"> Yes, absolutely 💖</div>
+          <div class="option-chip" id="chip_obviously" onclick="selectRadio('accept','obviously')"><input type="radio" name="accept" value="obviously"> Obviously yes 😌</div>
+          <div class="option-chip" id="chip_always" onclick="selectRadio('accept','always')"><input type="radio" name="accept" value="always"> Always &amp; forever ✨</div>
         </div>
       </div>
 
       <div class="field">
         <label>Preferred Benefits to Avail <span class="req">*</span></label>
         <div class="options-grid">
-          <label class="option-chip"><input type="checkbox" name="benefits" value="icecream"><label>Daily Ice Creams 🍦</label></label>
-          <label class="option-chip"><input type="checkbox" name="benefits" value="waffles"><label>Waffles 🧇</label></label>
-          <label class="option-chip"><input type="checkbox" name="benefits" value="care"><label>Unlimited Care 🤍</label></label>
-          <label class="option-chip"><input type="checkbox" name="benefits" value="food"><label>Random Food Treats 🍜</label></label>
-          <label class="option-chip"><input type="checkbox" name="benefits" value="all"><label>All of the above 😋</label></label>
+          <div class="option-chip" id="chip_icecream" onclick="toggleCB('icecream')"><input type="checkbox" name="benefits" value="icecream"> Daily Ice Creams 🍦</div>
+          <div class="option-chip" id="chip_waffles" onclick="toggleCB('waffles')"><input type="checkbox" name="benefits" value="waffles"> Waffles 🧇</div>
+          <div class="option-chip" id="chip_care" onclick="toggleCB('care')"><input type="checkbox" name="benefits" value="care"> Unlimited Care 🤍</div>
+          <div class="option-chip" id="chip_food" onclick="toggleCB('food')"><input type="checkbox" name="benefits" value="food"> Random Food Treats 🍜</div>
+          <div class="option-chip" id="chip_all" onclick="toggleCB('all')"><input type="checkbox" name="benefits" value="all"> All of the above 😋</div>
         </div>
       </div>
     </div>
@@ -669,6 +681,29 @@
 
   function updatePreview(val) {
     document.getElementById('preview-name').textContent = val || 'Ms. Vagitha Rifana';
+  }
+
+  // Chip selection handlers
+  const radioChipMap = { yes:'chip_yes', obviously:'chip_obviously', always:'chip_always' };
+  const cbChipMap = { icecream:'chip_icecream', waffles:'chip_waffles', care:'chip_care', food:'chip_food', all:'chip_all' };
+
+  function selectRadio(name, value) {
+    // Clear all radio chips
+    Object.values(radioChipMap).forEach(id => document.getElementById(id).classList.remove('selected'));
+    // Uncheck all
+    document.querySelectorAll(`input[name="${name}"]`).forEach(i => i.checked = false);
+    // Set selected
+    document.getElementById(radioChipMap[value]).classList.add('selected');
+    document.querySelector(`input[name="${name}"][value="${value}"]`).checked = true;
+  }
+
+  function toggleCB(value) {
+    // Clear all benefit chips first
+    Object.values(cbChipMap).forEach(id => document.getElementById(id).classList.remove('selected'));
+    document.querySelectorAll('input[name="benefits"]').forEach(i => i.checked = false);
+    // Select only clicked one
+    document.getElementById(cbChipMap[value]).classList.add('selected');
+    document.querySelector(`input[name="benefits"][value="${value}"]`).checked = true;
   }
 
   // EmailJS init
